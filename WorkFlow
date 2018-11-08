@@ -45,4 +45,6 @@ Write a terminate interrupt detector and close all sockets etc.
 
 
 set timer to wait for the success message.
+dbname(str)-lock(int)
+ip-node(str)_status(int)| db_name()
 
