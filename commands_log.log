@@ -1,0 +1,2 @@
+for i in 1 2 3; do docker exec s_c2 bash /zoo/zookeeper-3.4.13/bin/zkServer.sh start; done
+for i in 1 2 3; do docker exec s_c2 cp /common_directory/zoo.cfg /zoo/zookeeper-3.4.13/conf/; done
