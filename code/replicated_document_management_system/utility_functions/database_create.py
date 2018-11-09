@@ -8,9 +8,9 @@
 """
 
 import sqlite3
-def create_database():
+def create_database(db_path):
     try:
-        conn = sqlite3.connect('./database/database.db')
+        conn = sqlite3.connect(db_path)
         conn.execute('''
                      CREATE TABLE cluster_db
                      (s_no INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -62,6 +62,13 @@ def create_database():
                      database TEXT NOT NULL,
                      FOREIGN KEY(database) REFERENCES cluster_db(database) ON DELETE CASCADE ON UPDATE CASCADE,
                      FOREIGN KEY(ip) REFERENCES cluster_ip(ip) ON DELETE CASCADE ON UPDATE CASCADE);
+                     ''')
+        print("Table created successfully")
+        conn.execute('''
+                      create table jobs(
+                      job_id primary key,
+                      database_name TEXT ,
+                      server_ip TEXT)       
                      ''')
         print("Table created successfully")
     except Exception as e:

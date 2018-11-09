@@ -1,8 +1,9 @@
 {
-    "length": 1,
+    "length": 2,
     "repos": [
-        "/Source/NewDB"
+        "/Source/NewDB",
+        "exit"
     ],
     "localtime": "Fri Nov  9 11:09:21 2018",
-    "lastUsedRepo": "/Source/NewDB"
+    "lastUsedRepo": "exit"
 }

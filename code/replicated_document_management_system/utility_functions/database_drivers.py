@@ -93,5 +93,6 @@ def getStatusFromIP(ip,db_name):
     conn.close()
     return status
 
-query = 'create table jobs(job_id primary key,  database_name TEXT , server_ip TEXT)'
-executeQuery(query)
+def delete_jobs(database_name):
+    query = 'delete from jobs where database_name=\'' + str(database_name) + '\''
+

@@ -64,6 +64,11 @@ class MVC:
     def setRepoPath(self,path):
         self.repoPath = path
 
+    def getRepoPath(self):
+        return self.repoPath
+
+    def getDbName(self):
+        return self.indexDict['databaseName']
 
     def add(self,path,absPath=False):
         # if absPath:
@@ -275,8 +280,14 @@ class MVC:
         shutil.rmtree(self.repoPath+'/.mvc/stage')
         os.mkdir(self.repoPath+'/.mvc/stage')
         pass
-    def mergeWithLatestVersion(self,latestVersion):
+    def mergeWithLatestVersion(self,latestVersion=0):
         # TODO: RESET Stage after merge
+        cVerIndexFile = open(self.repoPath+'/.mvc/old_index.json','r')
+        oldIndexDict = json.load(cVerIndexFile)
+        cVerIndexFile.close()
+        # latestVersion = 
+        self.setIndexDict()
+        latestVersion = self.indexDict['latestVersion']
         lIndexPath = self.repoPath +'/.mvc/master/'+str(latestVersion)+'/'+str(latestVersion)+'.json'
         if not os.path.exists(lIndexPath):
             print('ERROR latest version index not found!!')
@@ -292,18 +303,28 @@ class MVC:
         lIndex.close()
         # Do not change the current version to latest version until the merge is done !!!
         # because current version data is necessary for making merge changes using diff3 tool
-        currentVersion = self.indexDict['currentVersion']
+        currentVersion = oldIndexDict['currentVersion']
         cVerIndexFile = None
         if self.indexDict['isStageOccupied']:
             cVerIndexFile = open(self.repoPath+'/.mvc/stage/sIndex.json','r')
-        else:
+        elif currentVersion != 0:
             cVerIndexFile = open(self.repoPath+'/.mvc/master/'+str(currentVersion)+'/'+str(currentVersion)+'.json','r')
-        cVerIndexData = json.load(cVerIndexFile)
-        cVerIndexFile.close()
-        changes = self.returnIndexChangesForMerge(cVerIndexData,lIndexData)
-        print(changes)
-        self.makeMergeChanges(changes,currentVersion,latestVersion)
-        
+        else:
+            # when currentVersion is 0
+            cVerIndexData = { "version":0,"files":{} }
+        if currentVersion!=0:
+            cVerIndexData = json.load(cVerIndexFile)
+            cVerIndexFile.close()
+        changes = None
+        if currentVersion!=0:
+            changes = self.returnIndexChangesForMerge(cVerIndexData,lIndexData)
+        # print(changes)
+        if currentVersion!=0:
+            self.makeMergeChanges(changes,currentVersion,latestVersion)
+        else:
+            # self.makeMergeChanges(changes)
+            self.initialMerge(latestVersion)
+            pass
         # diff3 mine older yours
         #  mine -- current version in which changes will be incorporated , older --- common ancestor ,
         #  yours --- latest version
@@ -311,6 +332,40 @@ class MVC:
          
         
         pass
+    def initialMerge(self,latestVersion):
+        lIndexPath = self.repoPath +'/.mvc/master/'+str(latestVersion)+'/'+str(latestVersion)+'.json'
+        if not os.path.exists(lIndexPath):
+            print('ERROR latest version index not found!!')
+            sys.exit(0)
+        lIndex = open(lIndexPath,'r+') 
+        lIndexData = json.load(lIndex)
+        lIndex.close()
+        files = lIndexData['files']
+        for f,fData in files.items():
+            if not fData['isDeleted']:
+                normalizedPath = os.path.normpath(self.repoPath+'/'+fData['filePath'])
+                if os.path.exists(normalizedPath):
+                    fromPath = self.repoPath + '/.mvc/master/'+str(fData['fileVersionReference'])+'/'+fData['compressedFileName']
+                    tempToPath = self.repoPath + '/.mvc/temp/'+fData['name']
+                    if '.' in fData['name']:
+                        fileExtension = fData['name'].split(sep='.')[1]
+                        resultPath = self.repoPath + '/'+fData['fileHash']+'.'+fileExtension
+                    else:
+                        fileExtension = None
+                        resultPath = self.repoPath + '/.mvc/'+fData['fileHash']
+                    extractGZipFile(fromPath,tempToPath)
+                    diff3Merge(tempToPath,normalizedPath,tempToPath,resultPath,ancestorAlias=0,currentAlias=0,latestAlias=latestVersion)
+                    deleteFiles([normalizedPath])
+                    os.rename(resultPath,normalizedPath)
+                    pass
+                else:
+                    fromPath = self.repoPath + '/.mvc/master/'+str(fData['fileVersionReference'])+'/'+fData['compressedFileName']
+                    toPath = normalizedPath
+                    if not os.path.exists(os.path.split(normalizedPath)[0]):
+                        os.makedirs(os.path.split(normalizedPath)[0])
+                    extractGZipFile(fromPath,toPath)
+        pass
+    
     def status(self,printTree=True):
         self.printTreeWithCount3(self.repoPath,printTree=printTree,numberAll=False,showOnlyModified=False,absPath=True)
         self.indexDict['isStatusCheckDone'] = True
@@ -614,13 +669,14 @@ class MVC:
         lIndexFiles = lIndexData['files']
         # current version index data fetch
         cV = self.indexDict['currentVersion']
+        newDump = False
         cVFile = open('./.mvc/master/'+str(cV)+'/'+str(cV)+'.json','r')
         cVIndex = json.load(cVFile)
         cVFile.close()
         cVFiles = cVIndex['files']
         # deletion
-        # if len(changes['delete'])>0:
-        #     deleteFiles(changes['delete'])
+        if len(changes['delete'])>0:
+            deleteFiles(changes['delete'])
         # replacement
         if len(changes['replace'])>0:
             for rfPath in changes['replace']:
@@ -664,20 +720,20 @@ class MVC:
                         os.makedirs(basePath)
                         extractGZipFile(fromPath,toPath)
         # addition
-        # if len(changes['add'])>0:
-        #     for afPath in changes['add']:
-        #         fData = lIndexFiles[afPath]
-        #         fromPath = self.repoPath+'/.mvc/master/'+str(fData['lastAvailableInVersion'])+'/'+str(fData['compressedFileName'])
-        #         toPath = fData['filePath']
-        #         if os.path.exists(fData['filePath']):
-        #             extractGZipFile(fromPath,toPath)
-        #         else:
-        #             basePath,fileName = os.path.split(fData['filePath'])
-        #             if os.path.exists(basePath):
-        #                 extractGZipFile(fromPath,toPath)
-        #             else:
-        #                 os.makedirs(basePath)
-        #                 extractGZipFile(fromPath,toPath)
+        if len(changes['add'])>0:
+            for afPath in changes['add']:
+                fData = lIndexFiles[afPath]
+                fromPath = self.repoPath+'/.mvc/master/'+str(fData['lastAvailableInVersion'])+'/'+str(fData['compressedFileName'])
+                toPath = fData['filePath']
+                if os.path.exists(fData['filePath']):
+                    extractGZipFile(fromPath,toPath)
+                else:
+                    basePath,fileName = os.path.split(fData['filePath'])
+                    if os.path.exists(basePath):
+                        extractGZipFile(fromPath,toPath)
+                    else:
+                        os.makedirs(basePath)
+                        extractGZipFile(fromPath,toPath)
         
         os.chdir(cwd)
         pass
