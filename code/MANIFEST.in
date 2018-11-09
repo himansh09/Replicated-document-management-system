@@ -1,0 +1,4 @@
+include README.rst
+include database/database.db
+include index.json
+include repos.json

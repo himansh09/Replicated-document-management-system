@@ -27,24 +27,46 @@ def add_user_details(username,name,contact_details):
 
 def add_credential(username,password):
     executeQuery('insert into credentials (username,password) values(\''+str(username)+'\',\''+str(password)+'\');')
-    
+
 def add_db_in_cluster(cluster_id,db_name):
     executeQuery('insert into cluster_db(cluster_id,database) values(\''+str(cluster_id)+',\''+str(db_name)+'\');')
-    
+
 def add_node_in_cluster(cluster_id,ip):
     executeQuery('insert into cluster_ip(cluster_id,ip) values(\''+str(cluster_id)+',\''+str(ip)+'\');')
-    
+
 def add_user_db(cluster_id,db_name):
     executeQuery('insert into user_db(cluster_id,database) values(\''+str(cluster_id)+',\''+str(db_name)+'\');')
-    
+
 def add_lock_status(ip,status,db_name):
     query = 'insert into ip_node_status(ip,status,database) values(\''+(ip)+'\','+str(status)+',\''+str(db_name)+'\');'
     executeQuery(query)
-    
+
 def add_db_lock(db_name,lock):
     query = 'insert into db_lock(database,lock) values(\''+(db_name)+'\','+str(lock)+');'
     executeQuery(query)
-    
+
+def retreiveDbClusterMapping(db):
+    conn = sqlite3.connect('./database/database.db')
+    cur = conn.cursor()
+    cur.execute(
+        'select * from cluster_db where database like (\'' + str(db)  + '\')'
+    )
+    db = cur.fetchall()
+    conn.commit()
+    conn.close()
+    return db
+
+def retreiveServerClusterMapping(clusterId):
+    conn = sqlite3.connect('./database/database.db')
+    cur = conn.cursor()
+    cur.execute(
+        'select * from cluster_ip where cluster_id = ' + str(clusterId)
+    )
+    cluster = cur.fetchall()
+    conn.commit()
+    conn.close()
+    return cluster
+
 def getLockFromDB(db_name):
     query = 'select lock from db_lock where database =\'' + db_name + '\';'
     try:
@@ -70,6 +92,6 @@ def getStatusFromIP(ip,db_name):
     conn.commit()
     conn.close()
     return status
-    
-getStatusFromIP('1.1.1.1','abdb')
-    
+
+query = 'create table jobs(job_id primary key,  database_name TEXT , server_ip TEXT)'
+executeQuery(query)

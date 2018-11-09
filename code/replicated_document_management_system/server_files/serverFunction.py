@@ -42,6 +42,7 @@ def pushDB(message):
             lock = zk_client.Lock(dbName)
             lockAcquired = lock.acquire()
             #Add DB Entry and set lock to 1
+            
 
             emit("pushSignal",serverIP)
             #check lock in DB continuously
