@@ -9,19 +9,15 @@ Created on Thu Oct 18 16:05:20 2018
 import paramiko
 import os
 
-###defining prefixes
 remote_prefix = "/Source/Repo"
-#client_prefix = '/home/him/Documents/distributed_systems/Project/code'
-
-###files and folder to fetch list
-#files_to_fetch = ['try/a.pdf','try/b.pdf','try/him.pdf','highlighted_notes/data/ds_highlighted.zip']
-#folder_to_fetch = ['highlighted_notes/data/New/']
-#sever_ip = '127.0.0.1'
 server_username = 'ssh_user'
 server_password = 'password'
 
 
 def fetch_files(server_ip,files_to_fetch,client_prefix):
+    """
+        It pulls 'files_to_fetch' from 'server_ip' and stores it in 'client_prefix'
+    """
     ssh_client = paramiko.SSHClient()
     ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh_client.connect(hostname=server_ip,username=server_username,password=server_password)
@@ -40,6 +36,9 @@ def fetch_files(server_ip,files_to_fetch,client_prefix):
     ftp_client.close()
 
 def fetch_folder(server_ip,folder_to_fetch,client_prefix):
+    """
+        It pulls entire folder 'folder_to_fetch' and it's subfolders and files from 'server_ip', and stores it in 'client_prefix'
+    """
     ssh_client = paramiko.SSHClient()
     ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh_client.connect(hostname=server_ip,username=server_username,password=server_password)
