@@ -15,4 +15,3 @@ server_ip_from_request = ""
 remote_prefix = "/Source/Repo/"
 client_prefix = remote_prefix
 fetch_files.fetch_folder(server_ip_from_request,os.path.join(remote_prefix,db_name_requested,client_prefix))
-
