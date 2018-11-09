@@ -1,5 +1,8 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO ,emit,send
+import os
+import sys
+sys.path.insert(0,os.path.join(os.path.dirname(os.path.realpath(__file__)),'../utility_functions/'))
 import database_drivers as DB
 import random
 import utilities
