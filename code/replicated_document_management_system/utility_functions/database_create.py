@@ -14,7 +14,7 @@ def create_database(db_path):
         conn.execute('''
                      CREATE TABLE cluster_db
                      (s_no INTEGER PRIMARY KEY AUTOINCREMENT,
-                     cluster_id INT NOT NULL,
+                     cluster_id TEXT NOT NULL,
                      database TEXT NOT NULL,
                      FOREIGN KEY(cluster_id) REFERENCES cluster_ip(cluster_id) ON DELETE CASCADE ON UPDATE CASCADE);
                      ''')
@@ -28,14 +28,14 @@ def create_database(db_path):
         conn.execute('''
                      CREATE TABLE cluster_ip
                      (s_no INTEGER PRIMARY KEY AUTOINCREMENT,
-                     cluster_id INT NOT NULL,
+                     cluster_id TEXT NOT NULL,
                      ip TEXT NOT NULL);
                      ''')
         print("Table created successfully")
         conn.execute('''
                      CREATE TABLE user_db
                      (s_no INTEGER PRIMARY KEY AUTOINCREMENT,
-                     cluster_id INT NOT NULL,
+                     username TEXT NOT NULL,
                      database TEXT NOT NULL,
                      FOREIGN KEY(cluster_id) REFERENCES cluster_ip(cluster_id) ON DELETE CASCADE ON UPDATE CASCADE);
                      ''')
@@ -71,8 +71,7 @@ def create_database(db_path):
                       server_ip TEXT)       
                      ''')
         print("Table created successfully")
+        conn.close()
     except Exception as e:
         print("Exception [database_create.py:Database] ::-",str(e))
-    conn.close()
-create_database()
-    
+        conn.close()

@@ -8,14 +8,24 @@
 """
 
 
-import database_insertion_drivers
+from utility_functions import database_drivers
 import sqlite3
 
 def signup(username, password, name, contact_details):
-    add_credential([username, password])
-    add_user_details(username,name,contact_details)
-    print('Signup successful.\n')
-    #return success
+    conn = sqlite3.connect('./database/database.db')
+    cursor = conn.execute(
+                            'select * from credentials where username=\''+username+"\'"
+                        )
+    credential = (cursor.fetchall())
+    conn.close()
+    print(cursor)
+    if cursor:
+        return False
+    else:
+        database_drivers.add_credential([username, password])
+        database_drivers.add_user_details(username,name,contact_details)
+        print('Signup successful.\n')
+        return True
     
 def login(username,password):
     conn = sqlite3.connect('./database/database.db')
@@ -28,5 +38,6 @@ def login(username,password):
         return True
     else:
         return False
-    
+
+signup('Himansh','password','himanshu','contact_details')    
 print(login('him','password'))

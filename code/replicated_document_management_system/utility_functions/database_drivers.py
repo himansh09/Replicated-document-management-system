@@ -29,13 +29,15 @@ def add_credential(username,password):
     executeQuery('insert into credentials (username,password) values(\''+str(username)+'\',\''+str(password)+'\');')
 
 def add_db_in_cluster(cluster_id,db_name):
-    executeQuery('insert into cluster_db(cluster_id,database) values(\''+str(cluster_id)+',\''+str(db_name)+'\');')
+    executeQuery('insert into cluster_db(cluster_id,database) values(\''+str(cluster_id)+'\',\''+str(db_name)+'\');')
 
 def add_node_in_cluster(cluster_id,ip):
-    executeQuery('insert into cluster_ip(cluster_id,ip) values(\''+str(cluster_id)+',\''+str(ip)+'\');')
+    query = 'insert into cluster_ip(cluster_id,ip) values(\''+str(cluster_id)+'\',\''+str(ip)+'\');'
+    print(query)
+    executeQuery(query)
 
 def add_user_db(cluster_id,db_name):
-    executeQuery('insert into user_db(cluster_id,database) values(\''+str(cluster_id)+',\''+str(db_name)+'\');')
+    executeQuery('insert into user_db(cluster_id,database) values(\''+str(cluster_id)+'\',\''+str(db_name)+'\');')
 
 def add_lock_status(ip,status,db_name):
     query = 'insert into ip_node_status(ip,status,database) values(\''+(ip)+'\','+str(status)+',\''+str(db_name)+'\');'
@@ -95,4 +97,5 @@ def getStatusFromIP(ip,db_name):
 
 def delete_jobs(database_name):
     query = 'delete from jobs where database_name=\'' + str(database_name) + '\''
+    executeQuery(query)
 
