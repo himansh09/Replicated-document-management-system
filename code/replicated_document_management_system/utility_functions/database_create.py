@@ -15,8 +15,7 @@ def create_database(db_path):
                      CREATE TABLE cluster_db
                      (s_no INTEGER PRIMARY KEY AUTOINCREMENT,
                      cluster_id TEXT NOT NULL,
-                     database TEXT NOT NULL,
-                     FOREIGN KEY(cluster_id) REFERENCES cluster_ip(cluster_id) ON DELETE CASCADE ON UPDATE CASCADE);
+                     database TEXT NOT NULL);
                      ''')
         print("Table created successfully")
         conn.execute('''
@@ -36,32 +35,27 @@ def create_database(db_path):
                      CREATE TABLE user_db
                      (s_no INTEGER PRIMARY KEY AUTOINCREMENT,
                      username TEXT NOT NULL,
-                     database TEXT NOT NULL,
-                     FOREIGN KEY(cluster_id) REFERENCES cluster_ip(cluster_id) ON DELETE CASCADE ON UPDATE CASCADE);
+                     database TEXT NOT NULL);
                      ''')
         print("Table created successfully")
         conn.execute('''
                      CREATE TABLE user_details
                      (username TEXT PRIMARY KEY,
                      name TEXT NOT NULL,
-                     contact_details TEXT,
-                     FOREIGN KEY(username) REFERENCES credentials(username) ON DELETE CASCADE ON UPDATE CASCADE);
+                     contact_details TEXT);
                      ''')
         print("Table created successfully")
         conn.execute('''
                      CREATE TABLE db_lock
                      (database TEXT PRIMARY KEY,
-                     lock integer NOT NULL,
-                     FOREIGN KEY(database) REFERENCES cluster_db(database) ON DELETE CASCADE ON UPDATE CASCADE);
+                     lock integer NOT NULL);
                      ''')
         print("Table created successfully")
         conn.execute('''
                      CREATE TABLE ip_node_status
                      (ip TEXT PRIMARY KEY,
                      status integer NOT NULL,
-                     database TEXT NOT NULL,
-                     FOREIGN KEY(database) REFERENCES cluster_db(database) ON DELETE CASCADE ON UPDATE CASCADE,
-                     FOREIGN KEY(ip) REFERENCES cluster_ip(ip) ON DELETE CASCADE ON UPDATE CASCADE);
+                     database TEXT NOT NULL);
                      ''')
         print("Table created successfully")
         conn.execute('''
