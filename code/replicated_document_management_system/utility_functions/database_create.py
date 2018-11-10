@@ -44,7 +44,7 @@ def create_database(db_path):
                      CREATE TABLE user_details
                      (username TEXT PRIMARY KEY,
                      name TEXT NOT NULL,
-                     contact_details INT,
+                     contact_details TEXT,
                      FOREIGN KEY(username) REFERENCES credentials(username) ON DELETE CASCADE ON UPDATE CASCADE);
                      ''')
         print("Table created successfully")

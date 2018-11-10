@@ -13,18 +13,14 @@ import sqlite3
 
 def signup(username, password, name, contact_details):
     conn = sqlite3.connect('./database/database.db')
-    cursor = conn.execute(
-                            'select * from credentials where username=\''+username+"\'"
-                        )
+    cursor = conn.execute( 'select * from credentials where username=\''+username+"\'" )
     credential = (cursor.fetchall())
     conn.close()
-    print(cursor)
-    if cursor:
+    if credential:
         return False
     else:
-        database_drivers.add_credential([username, password])
+        database_drivers.add_credential(username, password)
         database_drivers.add_user_details(username,name,contact_details)
-        print('Signup successful.\n')
         return True
     
 def login(username,password):
@@ -34,10 +30,13 @@ def login(username,password):
                         )
     credential = (cursor.fetchall())
     conn.close()
-    if credential[0][1] == password:
-        return True
+    if credential:
+        if credential[0][1] == password:
+            return True
+        else:
+            return False
     else:
         return False
 
-signup('Himansh','password','himanshu','contact_details')    
-print(login('him','password'))
+print(signup('Himanshddu','password','himanshu','785634535'))
+print(login('Himanshu','password'))

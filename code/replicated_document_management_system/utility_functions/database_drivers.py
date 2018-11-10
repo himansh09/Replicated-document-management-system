@@ -23,7 +23,7 @@ def executeQuery(query_string):
     conn.close()
 
 def add_user_details(username,name,contact_details):
-    executeQuery('insert into user_details (username,name,contact_details) values(\''+str(username)+'\',\''+str(name)+'\','+str(contact_details)+');')
+    executeQuery('insert into user_details (username,name,contact_details) values(\''+str(username)+'\',\''+str(name)+'\',\''+str(contact_details)+'\');')
 
 def add_credential(username,password):
     executeQuery('insert into credentials (username,password) values(\''+str(username)+'\',\''+str(password)+'\');')
